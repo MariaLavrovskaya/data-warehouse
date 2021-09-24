@@ -1,6 +1,7 @@
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 import os
+import pandas as pd
 
 def load_database_credentials(db_info):
     """ Load text file with credentials 
@@ -32,6 +33,12 @@ def create_db_tables(db_info):
     """ Creates tables in the existing database. If error is raised, both tables are deleted
      """
     db_port, db_name, db_user, password = load_database_credentials(db_info)
+    # with open('/Users/user/Desktop/book/data-warehouse/data/historical_data.csv', newline = '') as csvfile: 
+    #     daily_pairs = csv.reader(csvfile, delimiter = ',')
+    #     print(daily_pairs[0])
+    names = pd.read_csv('/Users/user/Desktop/book/data-warehouse/data/information.csv', header=0)
+    print(names['abbr'])
+
     commands = (""" 
     
                 CREATE TABLE information (
@@ -51,22 +58,65 @@ def create_db_tables(db_info):
                 );
                 """)
 
-    try: 
-        for command in commands: 
-            conn = psycopg2.connect(port=db_port, dbname=db_name, user=db_user, password=password)
-            cur = conn.cursor()
-            cur.execute(command)
+    # try: 
+        
+    #     for command in commands: 
+    #         conn = psycopg2.connect(port=db_port, dbname=db_name, user=db_user, password=password)
+    #         cur = conn.cursor()
+    #         cur.execute(command)
+    #         conn.commit()
+    #         cur.close()
+    # except (Exception, psycopg2.DatabaseError) as error:
+    #     # if any errors raised, print the error and delete whatever was created
+    #         print(error)
+    #         conn = psycopg2.connect(port=db_port, dbname=db_name, user=db_user, password=password)
+    #         cur = conn.cursor()
+    #         cur.execute('DROP TABLE information CASCADE;')
+    #         cur.execute('DROP TABLE crypto_pairs')
+    #         conn.commit()
+    #         cur.close()
+    try:
+        conn = psycopg2.connect(port=db_port, dbname=db_name, user=db_user, password=password)
+        cur = conn.cursor()
+        cur.execute(""" 
+    
+                CREATE TABLE information (
+                    id SERIAL PRIMARY KEY, 
+                    abbrevation TEXT, 
+                    name TEXT NOT NULL
+                ); """)
+        conn.commit()
+        for element in names['name']:
+            cur.execute(
+                """
+                CREATE TABLE %s (
+                    id integer REFERENCES information (id) ON DELETE CASCADE, --References the primary key created in the information table, if the information is deleted, id is erased
+                    Open NUMERIC(20, 20) NOT NULL, -- Numeric(precision, scale)
+                    High NUMERIC(20, 20) NOT NULL, 
+                    Low NUMERIC(20, 20) NOT NULL, 
+                    Close NUMERIC(20, 20) NOT NULL, 
+                    Adj_Close NUMERIC(20, 20) NOT NULL, 
+                    Volume NUMERIC(20, 20) NOT NULL
+                );
+                """ %element)
             conn.commit()
-            cur.close()
+        cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
         # if any errors raised, print the error and delete whatever was created
             print(error)
             conn = psycopg2.connect(port=db_port, dbname=db_name, user=db_user, password=password)
             cur = conn.cursor()
             cur.execute('DROP TABLE information CASCADE;')
-            cur.execute('DROP TABLE crypto_pairs')
             conn.commit()
+            for element in names['name']:
+                cur.execute('DROP TABLE %s' %element)
+                conn.commit()
+            # cur.execute('DROP TABLE crypto_pairs')
             cur.close()
+
+
+
+
 
 
 
