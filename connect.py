@@ -28,6 +28,46 @@ def create_database(db_info):
     cur.execute('CREATE DATABASE %s ;' %db_name)
     cur.close()
 
+def create_db_tables(db_info):
+    """ Creates tables in the existing database. If error is raised, both tables are deleted
+     """
+    db_port, db_name, db_user, password = load_database_credentials(db_info)
+    commands = (""" 
+    
+                CREATE TABLE information (
+                    id SERIAL PRIMARY KEY, 
+                    abbrevation TEXT, 
+                    name TEXT NOT NULL
+                ); """, 
+                """
+                CREATE TABLE crypto_pairs (
+                    id integer REFERENCES information (id) ON DELETE CASCADE, --References the primary key created in the information table, if the information is deleted, id is erased
+                    Open NUMERIC(20, 20) NOT NULL, -- Numeric(precision, scale)
+                    High NUMERIC(20, 20) NOT NULL, 
+                    Low NUMERIC(20, 20) NOT NULL, 
+                    Close NUMERIC(20, 20) NOT NULL, 
+                    Adj_Close NUMERIC(20, 20) NOT NULL, 
+                    Volume NUMERIC(20, 20) NOT NULL
+                );
+                """)
+
+    try: 
+        for command in commands: 
+            conn = psycopg2.connect(port=db_port, dbname=db_name, user=db_user, password=password)
+            cur = conn.cursor()
+            cur.execute(command)
+            conn.commit()
+            cur.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        # if any errors raised, print the error and delete whatever was created
+            print(error)
+            conn = psycopg2.connect(port=db_port, dbname=db_name, user=db_user, password=password)
+            cur = conn.cursor()
+            cur.execute('DROP TABLE information CASCADE;')
+            cur.execute('DROP TABLE crypto_pairs')
+            conn.commit()
+            cur.close()
+
 
 
 def main():
@@ -40,14 +80,9 @@ def main():
     # cur = conn.cursor()
     except:
         create_database(db_info)
+    # once the database is created, we create tables inside the database
+    create_db_tables(db_info)
     
-    
-    # test
-    # cur.execute("CREATE TABLE test (id serial, num integer, data varchar);")
-    # conn.commit()
-    # cur.close()
-    # db_version = cur.fetchone()
-    # print(db_version)
 
 
 if __name__ == "__main__":
