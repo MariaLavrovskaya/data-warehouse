@@ -1,0 +1,2 @@
+# input local database credentials on the second line. Don't use spaces between the variables. The order should be as follows: port, dbname, user, password
+5432,dvdrental,user,
