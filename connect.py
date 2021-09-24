@@ -3,6 +3,8 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 import os
 import pandas as pd
 
+
+
 def load_database_credentials(db_info):
     """ Load text file with credentials 
      Parameters
@@ -20,7 +22,15 @@ def load_database_credentials(db_info):
     lines = f.readlines()[1:][0].split(',')
     return lines 
 
+
+
 def create_database(db_info):
+    """ Create database if one does not exist
+    Parameters
+    ----------
+    db_info: string 
+              the string holding txt file
+     """
     db_port, db_name, db_user, password = load_database_credentials(db_info)
     print('Database is being created')
     conn = psycopg2.connect(port=db_port, dbname='postgres', user=db_user, password=password)
@@ -29,52 +39,21 @@ def create_database(db_info):
     cur.execute('CREATE DATABASE %s ;' %db_name)
     cur.close()
 
+
+
 def create_db_tables(db_info):
     """ Creates tables in the existing database. If error is raised, both tables are deleted
+    Parameters
+    ----------
+    db_info: string 
+              the string holding txt file  
      """
     db_port, db_name, db_user, password = load_database_credentials(db_info)
     # with open('/Users/user/Desktop/book/data-warehouse/data/historical_data.csv', newline = '') as csvfile: 
     #     daily_pairs = csv.reader(csvfile, delimiter = ',')
     #     print(daily_pairs[0])
     names = pd.read_csv('/Users/user/Desktop/book/data-warehouse/data/information.csv', header=0)
-    print(names['abbr'])
 
-    commands = (""" 
-    
-                CREATE TABLE information (
-                    id SERIAL PRIMARY KEY, 
-                    abbrevation TEXT, 
-                    name TEXT NOT NULL
-                ); """, 
-                """
-                CREATE TABLE crypto_pairs (
-                    id integer REFERENCES information (id) ON DELETE CASCADE, --References the primary key created in the information table, if the information is deleted, id is erased
-                    Open NUMERIC(20, 20) NOT NULL, -- Numeric(precision, scale)
-                    High NUMERIC(20, 20) NOT NULL, 
-                    Low NUMERIC(20, 20) NOT NULL, 
-                    Close NUMERIC(20, 20) NOT NULL, 
-                    Adj_Close NUMERIC(20, 20) NOT NULL, 
-                    Volume NUMERIC(20, 20) NOT NULL
-                );
-                """)
-
-    # try: 
-        
-    #     for command in commands: 
-    #         conn = psycopg2.connect(port=db_port, dbname=db_name, user=db_user, password=password)
-    #         cur = conn.cursor()
-    #         cur.execute(command)
-    #         conn.commit()
-    #         cur.close()
-    # except (Exception, psycopg2.DatabaseError) as error:
-    #     # if any errors raised, print the error and delete whatever was created
-    #         print(error)
-    #         conn = psycopg2.connect(port=db_port, dbname=db_name, user=db_user, password=password)
-    #         cur = conn.cursor()
-    #         cur.execute('DROP TABLE information CASCADE;')
-    #         cur.execute('DROP TABLE crypto_pairs')
-    #         conn.commit()
-    #         cur.close()
     try:
         conn = psycopg2.connect(port=db_port, dbname=db_name, user=db_user, password=password)
         cur = conn.cursor()
@@ -91,12 +70,13 @@ def create_db_tables(db_info):
                 """
                 CREATE TABLE %s (
                     id integer REFERENCES information (id) ON DELETE CASCADE, --References the primary key created in the information table, if the information is deleted, id is erased
-                    Open NUMERIC(20, 20) NOT NULL, -- Numeric(precision, scale)
-                    High NUMERIC(20, 20) NOT NULL, 
-                    Low NUMERIC(20, 20) NOT NULL, 
-                    Close NUMERIC(20, 20) NOT NULL, 
-                    Adj_Close NUMERIC(20, 20) NOT NULL, 
-                    Volume NUMERIC(20, 20) NOT NULL
+                    Date date,
+                    Open NUMERIC, -- Numeric(precision, scale)
+                    High NUMERIC, 
+                    Low NUMERIC, 
+                    Close NUMERIC, 
+                    Adj_Close NUMERIC, 
+                    Volume NUMERIC
                 );
                 """ %element)
             conn.commit()
@@ -113,8 +93,6 @@ def create_db_tables(db_info):
                 conn.commit()
             # cur.execute('DROP TABLE crypto_pairs')
             cur.close()
-
-
 
 
 
