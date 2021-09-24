@@ -8,7 +8,7 @@ This code repository will build a Postgre database on your local machine. Here w
 can be used to build database with the data you need. This code is meant to build the database in PostgreSQL using Python and Bash. We first define a very simple SQL schema
 that involves one-to-one and many-to-une relationships. This design can be improved by introducing more data with more complex many-to-many relationships. 
 
-##Requirements
+## Requirements
 Python (we use 3.9.7)
 PostgreSQL==13.4
 pandas==1.3.2
