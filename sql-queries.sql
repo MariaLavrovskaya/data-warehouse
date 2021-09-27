@@ -16,3 +16,6 @@ INSERT INTO temp_volumes (Date, Volumes)
 SELECT b.date, b.volume
 FROM bitcoin b
 WHERE date='2018-01-01';
+
+--Count the number of entries in the temporary table 
+SELECT count(*) FROM temp_volumes;
