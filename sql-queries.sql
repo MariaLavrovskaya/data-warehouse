@@ -51,5 +51,7 @@ ALTER TABLE t_bitcoin ALTER COLUMN volume TYPE TEXT;
 UPDATE t_bitcoin t SET volume = t.volume || 'last updated ' || current_date::text;
 
 
-
-
+-- 9. We want to delete some queries that meet our like clause and save them in CTE. We work with the same t_bitcoin table created previously
+CREATE temp table delete_bitcoin as select * from bitcoin limit 0; -- We create a table where we will save deleted entries
+ALTER TABLE delete_bitcoin ALTER COLUMN volume TYPE TEXT;
+with t_bitcoin_1 as (delete from t_bitcoin where cast(date as text)  like '2018%' returning *) insert into delete_bitcoin select * from t_bitcoin_1 t; --CTE
