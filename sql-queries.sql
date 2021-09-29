@@ -55,3 +55,6 @@ UPDATE t_bitcoin t SET volume = t.volume || 'last updated ' || current_date::tex
 CREATE temp table delete_bitcoin as select * from bitcoin limit 0; -- We create a table where we will save deleted entries
 ALTER TABLE delete_bitcoin ALTER COLUMN volume TYPE TEXT;
 with t_bitcoin_1 as (delete from t_bitcoin where cast(date as text)  like '2018%' returning *) insert into delete_bitcoin select * from t_bitcoin_1 t; --CTE
+
+-- 10. Count row_number for volume where window frame is the date. 
+SELECT volume, row_number() OVER w FROM bitcoin WINDOW w  AS (partition by date); 
