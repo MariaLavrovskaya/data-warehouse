@@ -9,10 +9,10 @@ can be used to build database with the data you need. This code is meant to buil
 that involves one-to-one and many-to-une relationships. This design can be improved by introducing more data with more complex many-to-many relationships. 
 
 ## Requirements
-Python (we use 3.9.7)
-PostgreSQL==13.4
-pandas==1.3.2
-yfinance==0.1.63
+Python (we use 3.9.7)  
+PostgreSQL==13.4  
+pandas==1.3.2 
+yfinance==0.1.63  
 
 ## Structure
 
