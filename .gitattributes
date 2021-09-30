@@ -1,4 +1,4 @@
 *.sql linguist-detectable=true
 *.md linguist-detectable=true
-*.py linguist-detectable=false
+*.py linguist-detectable=true
 static/* linguist-vendored
