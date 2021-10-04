@@ -65,7 +65,7 @@ SELECT bitcoin_opening, lead(bitcoin_opening) OVER w FROM (SELECT OPEN AS bitcoi
 SELECT bitcoin_opening, ntile(4) OVER w FROM (SELECT OPEN AS bitcoin_opening FROM bitcoin) V WINDOW w AS (ORDER BY bitcoin_opening); -- group in four buckets
 SELECT bitcoin_opening, cume_dist() OVER w FROM (SELECT OPEN AS bitcoin_opening FROM bitcoin) V WINDOW w AS (ORDER BY bitcoin_opening); -- computes the fraction of partition rows that are less then or equal to the current row and its peers, according to the definition of the cumulative distribution 
 
--- 12. More advanced window functions using the FRAME clause. 
+-- 12. More advanced window functions using the FRAME clause. Here we show how ROWS start_point and end_point can be used. We can also use RANGE which combines all the rows it comes across with non-unique values.
 select x, sum(x) over w from (select open as x from bitcoin) V window w as (order by x rows between unbounded preceding and current row); -- Unbounded preceding in the first row, whereas current row is the running row. This gives "running" sum from first row till last. 
 select x, sum(x) over w from (select open as x from bitcoin) V window w as (order by x rows between current row and unbounded following); -- Unbounded following "fixes" the the cursor on the last value and current row is the one we are currently at. That's why the sum starts decreasing.
 
