@@ -11,7 +11,7 @@ that involves one-to-one and many-to-une relationships. This design can be impro
 ## Requirements
 Python (we use 3.9.7)  
 PostgreSQL==13.4  
-pandas==1.3.2 
+pandas==1.3.2  
 yfinance==0.1.63  
 
 ## Structure
