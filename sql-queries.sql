@@ -59,5 +59,6 @@ with t_bitcoin_1 as (delete from t_bitcoin where cast(date as text)  like '2018%
 -- 10. Count row_number for volume where window frame is the date. 
 SELECT volume, row_number() OVER w FROM bitcoin WINDOW w  AS (partition by date); 
 
--- 11. WINDOW FUNCTIONS. Print the lag of the open together with the current open from bitcoin table
+-- 11. WINDOW FUNCTIONS. Print the lag(), lead(), ntile(), cume_dist() of the open together with the current open from bitcoin table
 SELECT opening, lag(opening) OVER w FROM (SELECT OPEN AS opening FROM bitcoin ) V  window w AS (ORDER BY opening); --print the lag, V after FROM subquery is used as dummy since FROM subquery requires the letter to be there
+SELECT bitcoin_opening, lead(bitcoin_opening) OVER w FROM (SELECT OPEN AS bitcoin_opening FROM bitcoin) V WINDOW w AS (ORDER BY bitcoin_opening); --print the lead, V after FROM subquery is used as dummy since FROM subquery requires the letter to be there
