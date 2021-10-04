@@ -62,3 +62,6 @@ SELECT volume, row_number() OVER w FROM bitcoin WINDOW w  AS (partition by date)
 -- 11. WINDOW FUNCTIONS. Print the lag(), lead(), ntile(), cume_dist() of the open together with the current open from bitcoin table
 SELECT opening, lag(opening) OVER w FROM (SELECT OPEN AS opening FROM bitcoin ) V  window w AS (ORDER BY opening); --print the lag, V after FROM subquery is used as dummy since FROM subquery requires the letter to be there
 SELECT bitcoin_opening, lead(bitcoin_opening) OVER w FROM (SELECT OPEN AS bitcoin_opening FROM bitcoin) V WINDOW w AS (ORDER BY bitcoin_opening); --print the lead, V after FROM subquery is used as dummy since FROM subquery requires the letter to be there
+SELECT bitcoin_opening, ntile(4) OVER w FROM (SELECT OPEN AS bitcoin_opening FROM bitcoin) V WINDOW w AS (ORDER BY bitcoin_opening); -- group in four buckets
+SELECT bitcoin_opening, cume_dist() OVER w FROM (SELECT OPEN AS bitcoin_opening FROM bitcoin) V WINDOW w AS (ORDER BY bitcoin_opening); -- computes the fraction of partition rows that are less then or equal to the current row and its peers, according to the definition of the cumulative distribution 
+
