@@ -69,3 +69,6 @@ SELECT bitcoin_opening, cume_dist() OVER w FROM (SELECT OPEN AS bitcoin_opening 
 select x, sum(x) over w from (select open as x from bitcoin) V window w as (order by x rows between unbounded preceding and current row); -- Unbounded preceding in the first row, whereas current row is the running row. This gives "running" sum from first row till last. 
 select x, sum(x) over w from (select open as x from bitcoin) V window w as (order by x rows between current row and unbounded following); -- Unbounded following "fixes" the the cursor on the last value and current row is the one we are currently at. That's why the sum starts decreasing.
 
+--13. Create server-side function that deletes all the duplicates from the data set, deplicates are determined by the timestamp. 
+
+
