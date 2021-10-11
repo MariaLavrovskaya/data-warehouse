@@ -70,5 +70,5 @@ select x, sum(x) over w from (select open as x from bitcoin) V window w as (orde
 select x, sum(x) over w from (select open as x from bitcoin) V window w as (order by x rows between current row and unbounded following); -- Unbounded following "fixes" the the cursor on the last value and current row is the one we are currently at. That's why the sum starts decreasing.
 
 --13. Create server-side function that deletes all the duplicates from the data set, deplicates are determined by the timestamp. 
-
+CREATE OR REPLACE FUNCTION delete_duplicates(x NUMERIC)
 
